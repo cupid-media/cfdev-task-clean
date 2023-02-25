@@ -21,9 +21,23 @@ component extends="coldbox.system.RestHandler" {
 	 */
 	function getAPokemon( event, rc, prc ) {
 
-		include "/models/pokemon.cfm";
+		//include "/models/pokemon.cfm";
+		pokemon = new models.Pokemon();
+		requestResult = pokemon.getPokemonProperties(rc.pokemonId);
+		
+		if(requestResult)
+		{
+			if(pokemon.checkExist(rc.pokemonId))
+			{
+				pokemon.updatePokemon(rc.pokemonId);
+			}
+			else
+			{
+				pokemon.insertPokemon(rc.pokemonId);
+			}
+		}
 
-		event.getResponse().setData( response );
+		event.getResponse().setData(pokemon.getResponse(rc.pokemonId));
 	}
 
 }
