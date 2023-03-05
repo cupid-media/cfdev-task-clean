@@ -14,16 +14,25 @@ component extends="coldbox.system.RestHandler" {
 	// REST Allowed HTTP Methods Ex: this.allowedMethods = {delete='POST,DELETE',index='GET'}
 	this.allowedMethods = {};
 
+	property name="pokemonService" inject="PokemonService";
+
 	/**
 	 * Retrieve and store a Pokemon
 	 *
 	 * Maps to GET /api/pokemon/{pokemonID}
 	 */
 	function getAPokemon( event, rc, prc ) {
+		local.input = arguments.rc;
 
-		include "/models/pokemon.cfm";
+		if(structKeyExists(local.input, 'pokemonId')){
+			local.response = pokemonService.getPokemonDetails(local.input.pokemonId);
 
-		event.getResponse().setData( response );
+			if(structKeyExists(local.response, 'code')){
+				event.getResponse().setError(true);
+				event.getResponse().setErrorMessage(local.response.message);
+			}
+			event.getResponse().setData( local.response.data );
+		}
 	}
 
 }
