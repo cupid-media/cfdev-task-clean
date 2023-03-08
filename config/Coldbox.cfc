@@ -58,7 +58,24 @@
 		 * Custom Settings
 		 * --------------------------------------------------------------------------
 		 */
-		settings = {};
+		settings = {
+			pokemon = {
+        		type = "H2",
+        		name = "pokemon"
+    		},
+			PokemonApi  = {
+				url = "https://pokeapi.co/api/v2/pokemon/"
+			},
+			restStatusCodes = {
+				"ok" : "200",
+				"created" : "201",
+				"bad" : "400",
+				"unauthorized" : "401",
+				"forbidden" : "403",
+				"notfound" : "404",
+				"error" : "500"
+			}
+		};
 
 		/**
 		 * --------------------------------------------------------------------------
@@ -121,7 +138,11 @@
 		 * --------------------------------------------------------------------------
 		 * Remember that the order of declaration is the order they will be registered and fired
 		 */
-		interceptors = [];
+		interceptors = [
+			
+			 { class = "interceptors.PokemanApiExceptionHandler", properties = {} }
+
+		];
 
 		/**
 		 * --------------------------------------------------------------------------
