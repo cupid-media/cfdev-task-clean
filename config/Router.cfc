@@ -31,7 +31,7 @@ component {
 		get( "/api/whoami", "Echo.whoami" );
 
 		// Pokemon Routes
-		get( "api/pokemon/:pokemonId", "CupidPokemon.getAPokemon" );
+		get( "api/pokemon/:pokemonId", "CupidPokemon.getCupidPokemon" );
 
 		// Conventions based routing
 		route( ":handler/:action?" ).end();

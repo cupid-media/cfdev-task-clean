@@ -3,27 +3,37 @@
  */
 component extends="coldbox.system.RestHandler" {
 
-	// OPTIONAL HANDLER PROPERTIES
-	this.prehandler_only      = "";
-	this.prehandler_except    = "";
-	this.posthandler_only     = "";
-	this.posthandler_except   = "";
-	this.aroundHandler_only   = "";
-	this.aroundHandler_except = "";
-
-	// REST Allowed HTTP Methods Ex: this.allowedMethods = {delete='POST,DELETE',index='GET'}
-	this.allowedMethods = {};
+	property name="pokemon" inject="models:pokemon";
 
 	/**
-	 * Retrieve and store a Pokemon
+	 * check and store a Pokemon
 	 *
 	 * Maps to GET /api/pokemon/{pokemonID}
 	 */
-	function getAPokemon( event, rc, prc ) {
 
-		include "/models/pokemon.cfm";
+	public void function getCupidPokemon(event, rc, prc) {
 
-		event.getResponse().setData( response );
+		var result = getValidationManager().validate(
+            target      = rc,
+            constraints = {
+                pokemonId    : { required : true, type : "numeric" }
+            }
+        )
+
+        // If the validation failed, display an error message and setting response code to 400 (Bad Request)
+        if (result.hasErrors()) {
+        	event
+			.getResponse()
+			.setData({"error" : result.getErrors()})
+			.setStatusCode(400)
+			.addMessage( "Please correct the errors and retry" );
+			return;
+        } else {
+			var response = variables.pokemon.getCupidPokemon(rc.pokemonId);
+			event.getResponse().setData({"ApiResponse" : response.message});
+			event.getResponse().setStatusCode(response.statusCode);
+        }
+
 	}
 
 }
