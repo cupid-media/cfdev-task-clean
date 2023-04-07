@@ -1,0 +1,87 @@
+Router.cfc : As per assignment pokemonApi route is been set as "GET" http call for below handler and action.
+			 Updated action Name 
+			 {handler}.{action} : Explicit handler + action method
+			 
+ColdBox.cfc : I have set DSN and API Url in settings section, so that these can be injected as a property injection in any model.
+			  Example: coldbox:setting:dsn
+			  NOTE: Refering all the properties in variables scope and giving full path in property injection to avoid name conflicts.
+
+pokemon.cfm : Removed this file from model and its reference in handler.
+
+pokemonApiService.cfc : This is the end point to do a handshake with external pokemon API.
+						pokemonApiUrl is injected as settings property injection to get pokemonApi URL.
+						This API Service getPokemonById function accepts numeric pokemonID and returns struct with keys "success","data" and "statusode" which are set respectively based on the response from API call.
+						API service is consumed by the model.
+						
+PokemonDao: This is the DAO for pokemon data actions.
+			Used Cftags as it is friendly for Cfquery.
+			DSN is injected as settings property injection to get DSN name.
+			Insert or Update checks are in place for pokemon and Items tables and respective insert or update queries is called based on this check.
+													
+Pokemon.cfc : This is the model which is consumed by handler 
+			  The model has function getCupidPokemon which expects numeric pokemonId to be passed and returns structure data with keys "message", "statusCode".
+			  pokemonDao and pokemonApiService are injected as property injection.
+			  The function getCupidPokemon calls APIService and set message and statuscode of return structure accrodingly.
+			  DAO is been executed with the data returned from the API.
+			  Used try catch for exception handling at model level which override the global exception handling and set API specific error message to return struct message key.
+			 
+
+CupidPokemon.cfc : Handler extends coldbox.system.RestHandler
+				   pokemon model is injected as property injection.
+				   The Action getCupidPokemon expects numeric pokemonID to be passed and validation is done using the ValidationManager.validate function.
+				   IF above validation fails response object data and status code are updated with ErrorMessage and 400 respectively. 
+				   Data returned from the model is updated in response object with correct data and status code values.  
+			
+CupidPokemontest.cfc : Written API Integration testing.
+					   Covered 4 senarios.
+						1. Suit: Get cupidPokemon details with pokemonId 
+						   spec: Valid pokemonId.
+						   spec: pokemonId is a valid but calling method is POST
+						
+						2. Suit: Invalid PokemonId
+						   spec: pokemonId is a invalid
+						   spec: pokemonId is not exists
+						
+					   Based on the response, assertion is written for Error,satusCode and message.
+					   
+CupidPokemonServiceTest.cfc : Written unit test cases for Functions and methods(individual behaviour).
+							  Created mocks for model,ApiService and DAO.
+							  pokemon model properties are mocked, all these are written in beforeALL() life cycle method.
+							  These will get executed before executing the tests and these mocks will be available.
+							  
+							  Covered 5 Specs in suit: cupidPokemon Service.
+							   1. Checking pokemonMockModel is a component or not.
+							   
+							   2. Getting success response with valid pokemonID.
+							      Mocked the API service method of pokemon endpoint and returned valid pokemonId mock response data.
+								  mocked DAO menthod addOrUpdatePokemonDetails.
+							      Asserted the success status code and message.
+								  
+							   4. Exception test in model while calling Api and setting the response is not as expected.
+								  Mocked the API service method of pokemon endpoint and returned valid pokemonId mocked invalid response data.
+								  It has exception while setting variables and retuns response.
+								  No need to mock DAO in this senario.
+								  Result is asserted based on the response.
+								  
+						 3 and 5  PokemonID not exists and Pokemon response is not Json.
+								  In both cases DAO hit is not needed and hence skipped mocking the same.
+								  Result is asserted based on the response.
+								  
+								  
+								  
+Test Case URL's: http://127.0.0.1:8800/tests/runner.cfm?method=runRemote&directory=tests%2Especs&testBundles=tests%2Especs%2Eunit%2EcupidPokemonServiceTest&opt_run=true&coverageEnabled=false
+				 http://127.0.0.1:8800/tests/runner.cfm?method=runRemote&directory=tests%2Especs&testBundles=tests%2Especs%2Eintegration%2ECupidPokemonTests&opt_run=true&coverageEnabled=false
+				 
+				 NOTE : In Server.json added my own port number 
+				         "http":{
+							"port":"8800"
+						}
+						
+						Commited screenShots of All test cases(Alltestcases.png, cupidpokemonservicetest.png, cupidpokemontest.png)
+							  
+					   
+
+			
+			
+			
+				
