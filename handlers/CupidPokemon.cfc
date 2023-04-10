@@ -3,6 +3,9 @@
  */
 component extends="coldbox.system.RestHandler" {
 
+
+	property name="pokemonService" inject="models:pokemonService";
+
 	// OPTIONAL HANDLER PROPERTIES
 	this.prehandler_only      = "";
 	this.prehandler_except    = "";
@@ -21,9 +24,19 @@ component extends="coldbox.system.RestHandler" {
 	 */
 	function getAPokemon( event, rc, prc ) {
 
-		include "/models/pokemon.cfm";
-
-		event.getResponse().setData( response );
+		if(!isNumeric(rc.pokemonId)){
+			event.getResponse().setData("Validation Failed");
+			event.getResponse().setStatusCode(400);
+		}else{
+			var getPokemon = pokemonService.getPokemon(rc.pokemonId);
+			event.getResponse().setData( getPokemon.message );
+			if(getPokemon.success){
+				event.getResponse().setStatusCode(200);
+			}else{
+				event.getResponse().setStatusCode(500);
+			}
+		}
 	}
+
 
 }
