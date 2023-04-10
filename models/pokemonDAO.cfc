@@ -1,4 +1,4 @@
-<cfcomponent>
+<cfcomponent displayname="pokemonDAO" output="false">
 
 	<cfproperty name="dsn" inject="coldbox:setting:dsn">
 
@@ -6,7 +6,7 @@
 		<cfreturn this/>
 	</cffunction>
 
-	<cffunction name="createorupdatedata" access="public" hint="this function is used insert or update the data in the database ">
+	<cffunction name="createorupdatedata" access="public" hint="this function is used insert or update the data in the database " returntype="void">
 		<cfargument name="pokemonid" required="true" type="numeric">
 		<cfargument name="apirespdata" required="true" type="struct">
 
@@ -31,32 +31,38 @@
 			</cfquery>
 		</cfif>
 		<cfif isArray(arguments.apirespdata.itemsArr) and arrayLen(arguments.apirespdata.itemsArr)>
-			<cfloop from="1" to="#arrayLen(arguments.apirespdata.itemsArr)#" index="i">
-				<cfquery name="getpokemonitems" datasource="#dsn#">
-					select * from CUPIDMEDIA_POKEMON.ITEM where pokemonid = <cfqueryparam value="#arguments.pokemonid#" cfsqltype="cf_sql_integer">
-					and name = <cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.name#" cfsqltype="cf_sql_varchar">
-				</cfquery>
-				<cfif not getpokemonitems.recordcount>
-					<cfquery name="inspokemonitems" datasource="#dsn#">
-						insert into CUPIDMEDIA_POKEMON.ITEM (pokemonid, name, url)
-						values 
-						(
-							<cfqueryparam value="#arguments.pokemonid#" cfsqltype="cf_sql_integer">,
-							<cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.name#" cfsqltype="cf_sql_varchar">,
-							<cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.url#" cfsqltype="cf_sql_varchar">
-						) 
-					</cfquery>
-				<cfelse>
-					<cfquery name="updatepokemonitems" datasource="#dsn#">
-					update CUPIDMEDIA_POKEMON.ITEM
-						set name = <cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.name#" cfsqltype="cf_sql_varchar">,
-						url = <cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.url#" cfsqltype="cf_sql_varchar">
-						where pokemonid = <cfqueryparam value="#arguments.pokemonid#" cfsqltype="cf_sql_integer">
-						and name = <cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.name#" cfsqltype="cf_sql_varchar">
-					</cfquery>
-				</cfif>
-			</cfloop>
+			<cfset addorupdatepokemonitems(arguments.pokemonid,arguments.apirespdata)>
 		</cfif>
 	</cffunction>
 
+	<cffunction name="addorupdatepokemonitems" access="private" returntype="void">
+		<cfargument name="pokemonid" required="true" type="numeric">
+		<cfargument name="apirespdata" required="true" type="struct">
+		
+		<cfloop from="1" to="#arrayLen(arguments.apirespdata.itemsArr)#" index="i">
+			<cfquery name="getpokemonitems" datasource="#dsn#">
+				select * from CUPIDMEDIA_POKEMON.ITEM where pokemonid = <cfqueryparam value="#arguments.pokemonid#" cfsqltype="cf_sql_integer">
+				and name = <cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.name#" cfsqltype="cf_sql_varchar">
+			</cfquery>
+			<cfif not getpokemonitems.recordcount>
+				<cfquery name="inspokemonitems" datasource="#dsn#">
+					insert into CUPIDMEDIA_POKEMON.ITEM (pokemonid, name, url)
+					values 
+					(
+						<cfqueryparam value="#arguments.pokemonid#" cfsqltype="cf_sql_integer">,
+						<cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.name#" cfsqltype="cf_sql_varchar">,
+						<cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.url#" cfsqltype="cf_sql_varchar">
+					) 
+				</cfquery>
+			<cfelse>
+				<cfquery name="updatepokemonitems" datasource="#dsn#">
+				update CUPIDMEDIA_POKEMON.ITEM
+					set name = <cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.name#" cfsqltype="cf_sql_varchar">,
+					url = <cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.url#" cfsqltype="cf_sql_varchar">
+					where pokemonid = <cfqueryparam value="#arguments.pokemonid#" cfsqltype="cf_sql_integer">
+					and name = <cfqueryparam value="#arguments.apirespdata.itemsArr[i].item.name#" cfsqltype="cf_sql_varchar">
+				</cfquery>
+			</cfif>
+		</cfloop>
+	</cffunction>
 </cfcomponent>
