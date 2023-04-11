@@ -58,8 +58,37 @@
 		 * Custom Settings
 		 * --------------------------------------------------------------------------
 		 */
-		settings = {};
+		settings = {
+			pokemon_db = {
+        		name = "pokemon"
+    		}};
 
+			// WireBox configuration
+wirebox = {
+	
+    binder = {
+        // Bind the PokemonService component
+        PokemonService = "models.com.cupidmedia.pokemon.PokemonService",
+
+        // Bind the PokemonDao component
+        PokemonDao = "models.DAO.PokemonDao"
+    },
+
+    // Configure injection properties
+    injections = {
+        // Inject the PokemonService into your Pokemon component
+        Pokemon = {
+            properties = {
+                PokemonService = {
+                    ref = "PokemonService"
+                },
+                PokemonDao = {
+                    ref = "PokemonDao"
+                }
+            }
+        }
+    }
+};
 		/**
 		 * --------------------------------------------------------------------------
 		 * Environment Detection
@@ -313,6 +342,7 @@
 			eventAction      : "index"
 		};
 	}
+
 
 	/**
 	 * Development environment

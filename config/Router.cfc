@@ -30,8 +30,10 @@ component {
 		// API Secured Routes
 		get( "/api/whoami", "Echo.whoami" );
 
-		// Pokemon Routes
-		get( "api/pokemon/:pokemonId", "CupidPokemon.getAPokemon" );
+		
+		/*ColdBox will route the request to the view action of the Pokemon handler,
+		  passing in the captured pokemonId parameter as an argument. */
+		route( "/api/pokemon/:pokemonId" ).withAction({GET = 'view'}).toHandler("Pokemon");
 
 		// Conventions based routing
 		route( ":handler/:action?" ).end();
